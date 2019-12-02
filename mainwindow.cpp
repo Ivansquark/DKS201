@@ -8,6 +8,15 @@ MainWindow::MainWindow(QWidget *parent) :QMainWindow(parent), ui(new Ui::MainWin
 {
     C=0;
     ui->setupUi(this);
+    ui->centralWidget->setStyleSheet("color: white; background-color: "
+                  "rgb(0,20,40);"
+                  ""); //"border:1px solid black;border-radius:5px;");
+    ui->Exit->setStyleSheet("color:white;"
+                            "background-color: rgb(140,120,100);"
+                            "border:1px solid black;border-radius:50px;");
+    ui->NewWin->setStyleSheet("QPushButton{background:rgb(140,120,100);border-radius:50px;}"
+                              "QPushButton:hover{background:rgb(140,120,100);border-radius:50px;}"
+                              "QPushButton:pressed{background:rgb(240,240,240); position: relative;top: 10px; left: 10px;border-radius:50px;}");
     connect(this,SIGNAL(sendTestBegin()),this,SLOT(recieveTestBegin())); // -создаем этот коннект в конструкторе так как при вызове с кнопки вызывается несколько раз
 
     setup = new Setup(); // указатель на (новое) окно настроек
