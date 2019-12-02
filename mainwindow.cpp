@@ -17,6 +17,9 @@ MainWindow::MainWindow(QWidget *parent) :QMainWindow(parent), ui(new Ui::MainWin
     ui->NewWin->setStyleSheet("QPushButton{background:rgb(140,120,100);border-radius:50px;}"
                               "QPushButton:hover{background:rgb(140,120,100);border-radius:50px;}"
                               "QPushButton:pressed{background:rgb(240,240,240); position: relative;top: 10px; left: 10px;border-radius:50px;}");
+    ui->pushButton_3->setStyleSheet("QPushButton{background:rgb(140,120,100);border-radius:50px;}"
+                                    "QPushButton:hover{background:rgb(140,120,100);border-radius:50px;}"
+                                    "QPushButton:pressed{background:rgb(240,240,240); position: relative;top: 10px; left: 10px;border-radius:50px;}");
     connect(this,SIGNAL(sendTestBegin()),this,SLOT(recieveTestBegin())); // -создаем этот коннект в конструкторе так как при вызове с кнопки вызывается несколько раз
 
     setup = new Setup(); // указатель на (новое) окно настроек
