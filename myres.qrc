@@ -1,0 +1,5 @@
+<RCC>
+    <qresource prefix="/images">
+        <file>keyboard_icon-icons.com_71162.png</file>
+    </qresource>
+</RCC>
