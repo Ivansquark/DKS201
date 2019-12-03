@@ -8,36 +8,6 @@ MainWindow::MainWindow(QWidget *parent) :QMainWindow(parent), ui(new Ui::MainWin
 {
     C=0;
     ui->setupUi(this);
-    ui->centralWidget->setStyleSheet("color: white; background-color: "
-                  "rgb(0,10,30);"
-                  ""); //"border:1px solid black;border-radius:5px;");
-    ui->Exit->setStyleSheet("color:white;"
-                            "background-color: rgb(140,120,100);"
-                            "border:1px solid black;border-radius:50px;");
-    ui->NewWin->setStyleSheet("QPushButton{background:rgb(140,120,100);border-radius:50px;"
-                                "border:solid grey;"
-                                "border-style: outset;"
-                                "border-width: 2px;"
-                                "border-color: beige;"
-                                "font: bold 24px;"
-                                "min-width: 10em;"
-                                "padding: 6px;}"
-                              "QPushButton:hover{background:rgb(140,120,100);border-radius:50px;}"
-                              "QPushButton:pressed{background:grey;border:solid grey;}");
-    ui->pushButton_3->setStyleSheet("QPushButton{background:rgb(140,120,100);border-radius:50px;}"
-                                    "QPushButton:hover{background:rgb(140,120,100);border-radius:50px;}"
-                                    "QPushButton:pressed{background:rgb(240,240,240);border-radius:50px;}");
-    ui->pushButton->setStyleSheet("QPushButton{background-color:rgb(140,120,100);border-radius:20px;"
-                                  "border:solid grey;"
-                                  "border-style: outset;"
-                                  "border-width: 2px;"
-                                  "border-color: beige;"
-                                  "font: bold 24px;"
-                                  "min-width: 10em;"
-                                  "padding: 6px;}"
-                                "QPushButton:hover{background:rgb(140,120,100);border-radius:20px;}"
-                                "QPushButton:pressed{border-radius:20px; background: qradialgradient(cx:0.5, cy:0.5, radius: 1,"
-                                  "fx:0.5, fy:0.5, stop:0 rgba(10, 20, 30, 40), stop:1 rgb(0, 200, 230, 200))}");
 
     connect(this,SIGNAL(sendTestBegin()),this,SLOT(recieveTestBegin())); // -создаем этот коннект в конструкторе так как при вызове с кнопки вызывается несколько раз
 
@@ -178,7 +148,6 @@ void MainWindow::on_NewWin_clicked() // кнопка вызова окна на�
 
 void MainWindow::on_pushButton_clicked() // кнопка вызова окна с клавиатурой для ввода кода доступа;
 {
-
     key->setModal(true);
     key->showFullScreen();
     emit clearKeyM(1); //сигнал управления клавиатурой;
