@@ -23,6 +23,7 @@
 #include "averadc_com.h"
 
 #include "date.h"
+#include "bd.h"
 
 
 namespace Ui {
@@ -56,6 +57,8 @@ private slots:
     void on_pushButton_7_clicked();
 
 
+
+    void on_pushButton_8_clicked();
 
 public slots:
     void setText1(QString str);

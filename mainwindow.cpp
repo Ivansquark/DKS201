@@ -364,3 +364,11 @@ void MainWindow::on_pushButton_7_clicked() // временная кнопка и
 
 
 
+
+void MainWindow::on_pushButton_8_clicked()
+{
+    BD *bd = new BD(this);
+    bd->setModal(true);
+    bd->init();
+    bd->showFullScreen();
+}

@@ -23,7 +23,7 @@ Add_chamber::~Add_chamber()
 void Add_chamber::on_pushButton_clicked()
 {
     close();
-    destroy();
+    //destroy();
 }
 
 void Add_chamber::on_pushButton_9_clicked() // Добавить (Исправить) button push (pushButton_9)

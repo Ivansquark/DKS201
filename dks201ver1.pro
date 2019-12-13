@@ -8,6 +8,7 @@ QT       += core gui
 QT       += sql
 QT       += serialport
 CONFIG   += serialport
+QT       += printsupport
 
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
@@ -59,7 +60,10 @@ SOURCES += \
         sources.cpp \
         testcom.cpp \
         voltage.cpp \
-        volthex.cpp
+        volthex.cpp \
+    bd.cpp \
+    bd_table.cpp \
+    qcustomplot.cpp
 
 HEADERS += \
         add_chamber.h \
@@ -91,7 +95,10 @@ HEADERS += \
         sources.h \
         testcom.h \
         voltage.h \
-        volthex.h
+        volthex.h \
+    bd.h \
+    bd_table.h \
+    qcustomplot.h
 
 FORMS += \
         add_chamber.ui \
@@ -118,7 +125,9 @@ FORMS += \
         setup_test.ui \
         sources.ui \
         testcom.ui \
-        voltage.ui
+        voltage.ui \
+    bd.ui \
+    bd_table.ui
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin

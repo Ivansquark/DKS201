@@ -31,7 +31,7 @@ Measuring::Measuring(QWidget *parent) :
 //**************Connect на таймер -- из-за него иногда возникает SEGMENTATION FAULT хз почему-- (добавил в деструктор delete timer)***************
 
     connect(timer,SIGNAL(timeout()),this,SLOT(timeOut()));
-    qDebug()<<"connect timer";
+    //qDebug()<<"connect timer";
 //********************************************************************************************************
 
     QStringList strList;
@@ -67,6 +67,8 @@ Measuring::Measuring(QWidget *parent) :
 
 
     QSqlDatabase::addDatabase("QSQLITE","myDB");  //форма по значениям из БД
+    QSqlDatabase::addDatabase("QSQLITE","myDB1");  //форма по значениям из БД
+
 
     if(QSqlDatabase::contains("myDB"))
     {
@@ -1037,7 +1039,7 @@ void Measuring::on_pushButton_7_clicked() //кнопка старт
     ui->pushButton_2->setEnabled(false);
     ui->pushButton_3->setEnabled(false);
     ui->pushButton_4->setEnabled(false);
-    ui->pushButton_4->setStyleSheet("color:grey");
+    //ui->pushButton_4->setStyleSheet("color:grey");
     ui->pushButton_5->setEnabled(false);
     ui->pushButton_7->setEnabled(false);
 
@@ -1158,6 +1160,8 @@ void Measuring::on_pushButton_7_clicked() //кнопка старт
             }
         }
     }
+
+    mesToBD();
 }
 
 
@@ -1242,6 +1246,7 @@ void Measuring::timeOut() // функция срабатывающая по се
          //************************ Измерение тока на чувствительном диапазоне *****************************************************
         if(measuring_parameter=="1") //Измерение тока
         {
+            mesToTableBD(time,real_I);
             if(abs(real_I)<1e-9)
             {
                 ui->label_8->setText("пА");  // отображение
@@ -1286,6 +1291,8 @@ void Measuring::timeOut() // функция срабатывающая по се
 
         if(measuring_parameter=="2") //Измерение интеграла тока - функция обратная от тока (без СКО)
         {
+            mesToTableBD(time,integral_I);
+
             if(abs(real_I)<1e-9) // измерение тока - опускаем вниз
             {
                 ui->label_11->setText("пА");  // отображение
@@ -1333,6 +1340,8 @@ void Measuring::timeOut() // функция срабатывающая по се
             double real_Q1 = x*C1*(1e-12); // реальное значение заряда на конденсаторе в экспоненциальной форме
             ui->label_26->setText(QString::number(real_Q1));
 
+            mesToTableBD(time,real_Q1);
+
             if(abs(real_Q1)<1.2e-9)                                   // до 1000 пКл
             {
                 ui->label_8->setText("пКл");  // отображение
@@ -1366,6 +1375,9 @@ void Measuring::timeOut() // функция срабатывающая по се
         {
             double doseRate = abs(real_I*correctionF*sensibility*760*(273+temperature)/(293*pressure));
             integral_DoseRate+=doseRate;
+
+            mesToTableBD(time,doseRate);
+
             if(DOSE_threshold!=0.&&integral_DoseRate>DOSE_threshold) // срабатывания порога по времени
             {
                 emit threshold_stop();
@@ -1524,6 +1536,9 @@ void Measuring::timeOut() // функция срабатывающая по се
         {
             double doseRate = abs(real_I*correctionF*sensibility*760*(273+temperature)/(293*pressure));
             integral_DoseRate+=doseRate;
+
+            mesToTableBD(time,integral_DoseRate);
+
             if(DOSE_threshold!=0.&&integral_DoseRate>DOSE_threshold) // срабатывания порога по времени
             {
                 emit threshold_stop();
@@ -1680,6 +1695,9 @@ void Measuring::timeOut() // функция срабатывающая по се
             double ADC = ADC_V; //значение АЦП в В
             double real_Q1 = ADC*C1*(1e-12); // реальное значение заряда на конденсаторе в экспоненциальной форме
             double realDose = abs(real_Q1*correctionF*sensibility*760*(273+temperature)/(293*pressure));
+
+            mesToTableBD(time,realDose);
+
             if(DOSE_threshold!=0.&&realDose>DOSE_threshold) // срабатывания порога по времени
             {
                 emit threshold_stop();
@@ -1833,6 +1851,8 @@ void Measuring::timeOut() // функция срабатывающая по се
         //************************ Измерение тока на среднем диапазоне *****************************************************
         if(measuring_parameter=="1")
         {
+            mesToTableBD(time,real_I);
+
             if(abs(real_I)<2e-10)
             {
                 ui->label_23->setText("Низкая точность - смените диапазон");
@@ -1890,6 +1910,7 @@ void Measuring::timeOut() // функция срабатывающая по се
 
         if(measuring_parameter=="2") //Измерение интеграла тока - функция обратная от тока (без СКО)
         {
+            mesToTableBD(time,integral_I);
             if(abs(real_I)<2e-10)
             {
                 ui->label_23->setText("Низкая точность - смените диапазон");
@@ -1973,6 +1994,9 @@ void Measuring::timeOut() // функция срабатывающая по се
         {
             double x = ADC_V; //значение АЦП в В
             double real_Q1 = x*C2*(1e-12); // реальное значение заряда на конденсаторе в экспоненциальной форме            
+
+            mesToTableBD(time,real_Q1);
+
             if(abs(real_Q1)<1e-9)
             {
                 ui->label_23->setText("Низкая точность - смените диапазон");
@@ -2043,6 +2067,9 @@ void Measuring::timeOut() // функция срабатывающая по се
         {
             double doseRate = abs(real_I*correctionF*sensibility*760*(273+temperature)/(293*pressure));
             integral_DoseRate+=doseRate;
+
+            mesToTableBD(time,doseRate);
+
             if(DOSE_threshold!=0.&&integral_DoseRate>DOSE_threshold) // срабатывания порога по времени
             {
                 emit threshold_stop();
@@ -2203,6 +2230,9 @@ void Measuring::timeOut() // функция срабатывающая по се
         {
             double doseRate = abs(real_I*correctionF*sensibility*760*(273+temperature)/(293*pressure));
             integral_DoseRate+=doseRate;
+
+            mesToTableBD(time,integral_DoseRate);
+
             if(DOSE_threshold!=0.&&integral_DoseRate>DOSE_threshold) // срабатывания порога по времени
             {
                 emit threshold_stop();
@@ -2364,6 +2394,9 @@ void Measuring::timeOut() // функция срабатывающая по се
             double x = ADC_V; //значение АЦП в В
             double real_Q1 = x*C2*(1e-12); // реальное значение заряда на конденсаторе в экспоненциальной форме
             double realDose = abs(real_Q1*correctionF*sensibility*760*(273+temperature)/(293*pressure));
+
+            mesToTableBD(time,realDose);
+
             if(DOSE_threshold!=0.&&realDose>DOSE_threshold) // срабатывания порога по времени
             {
                 emit threshold_stop();
@@ -2527,6 +2560,8 @@ void Measuring::timeOut() // функция срабатывающая по се
 
         if(measuring_parameter=="1")
         {
+            mesToTableBD(time,real_I);
+
             if(abs(real_I)<2e-8)
             {
                 ui->label_23->setText("Низкая точность - смените диапазон");
@@ -2591,6 +2626,8 @@ void Measuring::timeOut() // функция срабатывающая по се
 
         if(measuring_parameter=="2") // Измерение интеграла тока на грубом диапазоне
         {
+            mesToTableBD(time,integral_I);
+
             if(abs(real_I)<2e-8)
             {
                 ui->label_23->setText("Низкая точность - смените диапазон");
@@ -2659,6 +2696,9 @@ void Measuring::timeOut() // функция срабатывающая по се
         {
             double x = ADC_V; //значение АЦП в В
             double real_Q1 = x*C2*(1e-12); // реальное значение заряда на конденсаторе в экспоненциальной форме            
+
+            mesToTableBD(time,real_Q1);
+
             if(abs(real_Q1)<1e-9)
             {
                 ui->label_23->setText("Низкая точность - смените диапазон");
@@ -2729,6 +2769,9 @@ void Measuring::timeOut() // функция срабатывающая по се
         {
             double doseRate = abs(real_I*correctionF*sensibility*760*(273+temperature)/(293*pressure));
             integral_DoseRate+=doseRate;
+
+            mesToTableBD(time,doseRate);
+
             if(DOSE_threshold!=0.&&integral_DoseRate>DOSE_threshold) // срабатывания порога по времени
             {
                 emit threshold_stop();
@@ -2890,6 +2933,8 @@ void Measuring::timeOut() // функция срабатывающая по се
             double doseRate = abs(real_I*correctionF*sensibility*760*(273+temperature)/(293*pressure));
             integral_DoseRate+=doseRate;
 
+            mesToTableBD(time,integral_DoseRate);
+
             if(DOSE_threshold!=0.&&integral_DoseRate>DOSE_threshold) // срабатывания порога по времени
             {
                 emit threshold_stop();
@@ -3050,6 +3095,8 @@ void Measuring::timeOut() // функция срабатывающая по се
             double x = ADC_V; //значение АЦП в В
             double real_Q1 = x*C2*(1e-12); // реальное значение заряда на конденсаторе в экспоненциальной форме
             double realDose = abs(real_Q1*correctionF*sensibility*760*(273+temperature)/(293*pressure));
+
+            mesToTableBD(time,realDose);
 
             if(DOSE_threshold!=0.&&realDose>DOSE_threshold) // срабатывания порога по времени
             {
@@ -3555,13 +3602,13 @@ void Measuring::setCS(QString number) //функция приема сигнал
             {
                 //dateVerificationCS
                 QDate dateVerificationCSd=QDate::fromString(query.value("sourceDateVerification").toString(),"dd.MM.yyyy");
-                qDebug()<<dateVerificationCSd;
+                //qDebug()<<dateVerificationCSd;
                 half_lifeCS=query.value("half_life").toDouble();
                 doseRateVerificationCS=query.value("doseRateVerification").toDouble();
                 doseRateCurrentCS=doseRateVerificationCS*pow(2,-1*(QDate::currentDate().toJulianDay()-dateVerificationCSd.toJulianDay())/(365*half_lifeCS));
                 doseRateDimension = query.value("doseRateDimension").toString();
                 QString strDimension = doseRateDimension.remove(2,doseRateDimension.size());
-                qDebug()<<strDimension;
+                //qDebug()<<strDimension;
                 if (strDimension=="мк")
                 {
                     doseRateFull = doseRateCurrentCS*1E-06;  // Доза в Гр/с (Зв/с) от источника на данный момент (расчетная-эталонная)
@@ -3584,6 +3631,101 @@ void Measuring::setCS(QString number) //функция приема сигнал
     //ui->label_32->setText(QString::number(delta,'f',3));
 }
 
+void Measuring::mesToBD()
+{
+    //************************* по кнопке старт создаем таблицу в БД mes.db ***************
+    QString nameChamber="";
+    QString dimension3="";
+    QString dimension2="";
+    QString dimension1="";
+    QString dimension="";
+    if(QSqlDatabase::contains("myDB"))
+    {
+        QSqlDatabase db=QSqlDatabase::database("myDB");
+        db.setDatabaseName("/home/pi/chambers.db");
+        if(!db.open())
+        {qDebug()<<"DB was not opened";}
+        QSqlQuery query(db);
+        if (!query.exec("SELECT *FROM config"))
+        {
+            qDebug()<<"Unable execute query SELECT";
+        }
+        if(query.first())
+        {
+            QString nameCh1 = query.value("name").toString();
+            nameChamber=nameCh1.replace("-","_");
+            dimension1=query.value("measuring_parameter").toString();//1,2,3,4,5,6
+            //qDebug()<<dimension1;
+            dimension2=query.value("dimensionSensibility").toString();//мЗв
+            //qDebug()<<dimension2;
+            dimension3=query.value("measuring_parameter_dimension").toString();//Зв/ч
+            //qDebug()<<dimension3;
 
+            if(dimension1=="1"){dimension = "А";}
+            if(dimension1=="2"){dimension = "Кл";}
+            if(dimension1=="3"){dimension = "Кл";}
+            if(dimension1=="4"){dimension = dimension3;}
+            if(dimension1=="5"){dimension = dimension2.remove(0,1);}
+            if(dimension1=="6"){dimension = dimension2.remove(0,1);}
+
+            if (dimension.contains("/")){dimension=dimension.replace("/","_");}
+        }
+        //db.close();
+    }
+    if(QSqlDatabase::contains("myDB1"))
+    {
+        QSqlDatabase db1 = QSqlDatabase::database("myDB1");
+        db1.setDatabaseName("/home/pi/mes.db");
+        if(!db1.open())
+        {
+            qDebug()<<"db1 was not opened";
+        }
+        QSqlQuery query1(db1);
+        QString newTab1 = "CREATE TABLE %1 ("
+                "second TEXT(8),"
+                "value TEXT(8))";
+        QString newTab2="%1_date_%2_time_%3_%4";
+        QString newTab3=newTab2 .arg(nameChamber)
+                                .arg(QDate::currentDate().toString("dd_MM_yyyy"))
+                                .arg(QTime::currentTime().toString("hh_mm_ss"))
+                                .arg(dimension);
+        mesDB_currentName=newTab3;        // добавляем название таблицы в глобальную переменную;
+        QString newTab = newTab1.arg(newTab3);
+        //qDebug()<<"****************************";
+        //qDebug()<<newTab;
+        //qDebug()<<"****************************";
+        //qDebug()<<mesDB_currentName;
+        //qDebug()<<"****************************";
+
+        if(!query1.exec(newTab))
+        { qDebug()<<"unable Create table";}
+        db1.close();
+    }
+}
+
+
+void Measuring::mesToTableBD(long second, double value)
+{
+    if (QSqlDatabase::contains("myDB1"))
+    {
+        QSqlDatabase db1=QSqlDatabase::database("myDB1");
+        db1.setDatabaseName("/home/pi/mes.db");
+        if(!db1.open()){qDebug()<<"db1 was not opened";}
+        QSqlQuery query(db1);
+        QString chooseTab1 = "INSERT INTO %1 ("
+                                              "second,"
+                                              "value)"
+                              "VALUES ('%2','%3');";
+        QString chooseTab=chooseTab1.arg(mesDB_currentName)
+                                    .arg(QString::number(second))
+                                    .arg(QString::number(value));
+        //qDebug()<<QString::number(second)<<QString::number(value);
+        //qDebug()<<chooseTab;
+        if(!query.exec(chooseTab))
+        {
+            qDebug()<<"Unable execute query INSERT into mes.db";
+        }
+    }
+}
 
 

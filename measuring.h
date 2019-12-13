@@ -111,6 +111,11 @@ private:
     double doseRateFull;
 
     bool CS_flag;
+
+    QString mesDB_currentName; //имя текущей таблицы в БД mes.db
+
+    void mesToBD(); // создание таблицы в БД mes.bd , таблица создается при запуске измерения.
+    void mesToTableBD(long second, double value); //заполнение созданной таблицы измеренными значениями ()
 };
 
 #endif // MEASURING_H
